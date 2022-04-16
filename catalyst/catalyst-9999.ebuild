@@ -6,7 +6,7 @@ EAPI=7
 if [[ ${PV} == *9999* ]]; then
 	SRC_ECLASS="git-r3"
 	EGIT_REPO_URI="https://github.com/daniel-noland/catalyst"
-	EGIT_BRANCH="master"
+	EGIT_BRANCH="fix-whitespace-error"
 else
 	SRC_URI="https://gitweb.gentoo.org/proj/catalyst.git/snapshot/${P}.tar.bz2"
 	KEYWORDS="~alpha ~amd64 ~arm ~arm64 ~hppa ~ia64 ~mips ~ppc ~ppc64 ~riscv ~s390 ~sparc ~x86"

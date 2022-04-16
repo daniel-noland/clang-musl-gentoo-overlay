@@ -52,9 +52,17 @@ emerge \
 ; \
 :;
 
+COPY ./catalyst/ /var/db/repos/gentoo/dev-util/catalyst/
+
+RUN \
+cd /var/db/repos/gentoo/dev-util/catalyst/; \
+ebuild catalyst-9999.ebuild manifest; \
+:;
+
 RUN \
 --mount=type=tmpfs,target=/run \
 emerge \
+  --autounmask-write \
   --complete-graph \
   --deep \
   --jobs="$(nproc)" \
@@ -63,5 +71,5 @@ emerge \
   --update \
   --verbose \
   --with-bdeps=y \
-   dev-util/catalyst
+  =dev-util/catalyst-9999::gentoo
 
