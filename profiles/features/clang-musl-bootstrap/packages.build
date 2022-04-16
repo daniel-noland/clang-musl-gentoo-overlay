@@ -1,0 +1,16 @@
+# will be pulled by stage1
+app-arch/xar
+sys-libs/compiler-rt
+sys-libs/libcxxabi
+sys-libs/libcxx
+sys-devel/llvm
+sys-devel/lld
+sys-devel/clang
+sys-libs/llvm-libunwind
+
+# GCC is required for stage1, since
+# by default everything is linked to it
+sys-devel/gcc
+sys-devel/gcc-config
+sys-devel/binutils
+sys-devel/binutils-config

@@ -1,0 +1,5 @@
+# package.accept_keywords# required by dev-util/catalyst-9999::dnoland
+# required by =dev-util/catalyst-9999 (argument)
+>=sys-fs/squashfs-tools-ng-1.1.3 ~amd64
+# required by =dev-util/catalyst-9999 (argument)
+=dev-util/catalyst-9999 **

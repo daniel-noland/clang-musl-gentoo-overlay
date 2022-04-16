@@ -1,0 +1,14 @@
+_HARDENING_FLAGS="-fPIC -fstack-protector-strong -D_FORTIFY_SOURCE=2"
+_COMMON_FLAGS="-O3 -march=native -pipe ${_HARDENING_FLAGS}"
+
+CFLAGS="${CFLAGS} ${_COMMON_FLAGS}"
+CXXFLAGS="${CXXFLAGS} ${_COMMON_FLAGS}"
+FCFLAGS="${FCFLAGS} ${_COMMON_FLAGS}"
+FFLAGS="${FFLAGS} ${_COMMON_FLAGS}"
+
+LDFLAGS="${LDFLAGS} -Wl,-O2"
+LDFLAGS="${LDFLAGS} -Wl,--as-needed"
+LDFLAGS="${LDFLAGS} -Wl,-z,relro,-z,now"
+LDFLAGS="${LDFLAGS} -pie"
+LDFLAGS="${LDFLAGS} -fuse-ld=lld"
+LDFLAGS="${LDFLAGS} -unwindlib=libunwind"

@@ -1,0 +1,3 @@
+# don't need split usr, prefer to avoid it
+BOOTSTRAP_USE="${BOOTSTRAP_USE} -split-usr"
+USE="${USE} -split-usr"

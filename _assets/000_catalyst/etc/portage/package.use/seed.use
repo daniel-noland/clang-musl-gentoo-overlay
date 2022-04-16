@@ -1,0 +1,2 @@
+>=dev-util/catalyst-3.0.21 -iso
+>=sys-apps/util-linux-2.37.4 python

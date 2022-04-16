@@ -1,0 +1,20 @@
+# Things I don't need by default in a container environment
+-*net-misc/iputils
+-*sys-apps/kbd
+-*sys-apps/kmod
+-*sys-apps/less
+-*sys-apps/shadow
+-*sys-fs/e2fsprogs
+-*sys-process/procps
+-*sys-process/psmisc
+-*virtual/dev-manager
+-*virtual/editor
+-*virtual/man
+-*virtual/os-headers
+-*virtual/pager
+-*virtual/ssh
+
+-*sys-apps/iproute2
+-*sys-apps/man-pages
+-*sys-apps/net-tools
+-*sys-apps/util-linux

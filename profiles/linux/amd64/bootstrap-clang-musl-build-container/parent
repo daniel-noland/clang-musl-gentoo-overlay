@@ -1,0 +1,5 @@
+gentoo:default/linux/amd64/17.1/clang
+gentoo:features/musl
+../../../features/container
+../../../features/llvm-amd64-specific
+../../../features/clang-musl-bootstrap
