@@ -111,6 +111,7 @@ COPY ./_assets/000_catalyst/etc/catalyst/ /etc/catalyst/
 
 RUN \
 --security=insecure \
+--mount=type=tmpfs,target=/run \
 catalyst --file /etc/catalyst/specs/bootstrap/stage1.spec; \
 :;
 
@@ -124,4 +125,24 @@ RUN \
 --security=insecure \
 --mount=type=tmpfs,target=/run \
 catalyst --file /etc/catalyst/specs/bootstrap/stage3.spec; \
+:;
+
+COPY ./_assets/001_catalyst/etc/catalyst/ /etc/catalyst/
+
+RUN \
+--security=insecure \
+--mount=type=tmpfs,target=/run \
+catalyst --file /etc/catalyst/specs/optimized/stage1.spec; \
+:;
+
+RUN \
+--security=insecure \
+--mount=type=tmpfs,target=/run \
+catalyst --file /etc/catalyst/specs/optimized/stage2.spec; \
+:;
+
+RUN \
+--security=insecure \
+--mount=type=tmpfs,target=/run \
+catalyst --file /etc/catalyst/specs/optimized/stage3.spec; \
 :;

@@ -1,0 +1,31 @@
+#!/bin/bash
+
+export ADDR2LINE="llvm-addr2line"
+export AR="llvm-ar"
+export AS="llvm-as"
+export CC="clang"
+export CXX="clang++"
+export LD="ld.lld"
+export NM="llvm-nm"
+export OBJCOPY="llvm-objcopy"
+export OBJDUMP="llvm-objdump"
+export RANLIB="llvm-ranlib"
+export READELF="llvm-readelf"
+export STRINGS="llvm-strings"
+export STRIP="llvm-strip"
+
+_OPTIMIZE_FLAGS="-O3 -march=native -flto=thin"
+
+export CFLAGS="${CFLAGS} ${_OPTIMIZE_FLAGS}"
+export CXXFLAGS="${CXXFLAGS} ${_OPTIMIZE_FLAGS}"
+export FCFLAGS="${FCFLAGS} ${_OPTIMIZE_FLAGS}"
+export FFLAGS="${FFLAGS} ${_OPTIMIZE_FLAGS}"
+
+LDFLAGS="${LDFLAGS} -Wl,-O2"
+LDFLAGS="${LDFLAGS} -Wl,--as-needed"
+LDFLAGS="${LDFLAGS} -Wl,-z,relro,-z,now"
+LDFLAGS="${LDFLAGS} -pie"
+LDFLAGS="${LDFLAGS} -fuse-ld=lld"
+LDFLAGS="${LDFLAGS} -unwindlib=libunwind"
+
+export LDFLAGS
