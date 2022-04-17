@@ -1,0 +1,6 @@
+# GCC is required for stage 1 but only in bootstrap
+# By default everything is linked to gnu toolchain stuff.
+sys-devel/gcc
+sys-devel/gcc-config
+sys-devel/binutils
+sys-devel/binutils-config

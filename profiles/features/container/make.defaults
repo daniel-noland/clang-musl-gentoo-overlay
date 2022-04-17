@@ -1,3 +1,11 @@
-# don't need split usr, prefer to avoid it
-BOOTSTRAP_USE="${BOOTSTRAP_USE} -split-usr"
-USE="${USE} -split-usr"
+EMERGE_DEFAULT_OPTS="--jobs 64 --load-average 80.0"
+
+# Disable sandbox for docker build (it is already sandboxed anyway and the second sandbox attempt fails)
+FEATURES="${FEATURES} -ipc-sandbox"
+FEATURES="${FEATURES} -network-sandbox"
+FEATURES="${FEATURES} -pid-sandbox"
+FEATURES="${FEATURES} -sandbox"
+FEATURES="${FEATURES} -usersandbox"
+
+# We don't need to spend time building and running tests.  They frequently fail in unprivileged container builds anyway.
+FEATURES="${FEATURES} -test"
