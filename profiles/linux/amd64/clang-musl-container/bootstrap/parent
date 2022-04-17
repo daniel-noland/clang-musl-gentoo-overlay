@@ -1,8 +1,7 @@
 ../../../../default/linux/amd64/17.0/musl
 ../../../../features/container
 ../../../../features/minimal
-../../../../features/llvm/amd64
 ../../../../features/python3.10
 ../../../../features/unified-usr
-../../../../features/llvm
+../../../../features/llvm/amd64
 ../../../../features/llvm/bootstrap
