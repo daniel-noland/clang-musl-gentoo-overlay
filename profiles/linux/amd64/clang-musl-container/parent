@@ -1,0 +1,7 @@
+../../../default/linux/amd64/17.1/clang
+../../../features/musl
+../../../features/container
+../../../features/minimal
+../../../features/llvm/amd64
+#../../../features/python3.10
+../../../features/unified-usr

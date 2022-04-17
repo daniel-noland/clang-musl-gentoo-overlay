@@ -76,21 +76,22 @@ emerge \
   --verbose \
   --with-bdeps=y \
   =dev-util/catalyst-9999::gentoo \
+  sys-fs/squashfs-tools \
 ; \
 :;
-
-COPY profiles/ /var/db/repos/gentoo/profiles/
 
 COPY --from=seed / /tmp/seed
 
 RUN \
-mkdir --parent /var/tmp/catalyst/builds/musl/clang; \
+mkdir --parent /var/tmp/catalyst/builds/; \
 tar \
   --create \
+  --directory=/tmp/seed \
   --file /var/tmp/catalyst/builds/seed.tar \
-  --directory=/run/seed \
   . \
 ;
+
+COPY ./profiles/ /var/db/repos/gentoo/profiles/
 
 RUN \
 mkdir --parent /var/tmp/catalyst/snapshots; \
@@ -100,6 +101,9 @@ mksquashfs gentoo /var/tmp/catalyst/snapshots/gentoo-snapshot.sqfs; \
 
 COPY ./_assets/000_catalyst/etc/portage/ /etc/portage/
 
+COPY ./_assets/000_catalyst/etc/catalyst/specs/ /etc/catalyst/specs/
+
 RUN \
+--security=insecure \
 catalyst --file /etc/catalyst/specs/bootstrap/stage1.spec; \
 :;

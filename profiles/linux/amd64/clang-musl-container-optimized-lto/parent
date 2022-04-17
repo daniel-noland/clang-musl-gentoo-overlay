@@ -1,7 +1,0 @@
-gentoo:default/linux/amd64/17.1/clang
-gentoo:features/musl
-../../../features/container
-../../../features/minimal
-../../../features/llvm/amd64
-../../../features/llvm/optimize
-../../../features/llvm/lto

@@ -1,3 +1,0 @@
-# Add gnu toolchain stuff back into the mix on top of extant
-# clang profile to fix bootstrap.
-gentoo:features/clang
