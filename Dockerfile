@@ -2,7 +2,7 @@
 ARG upstream_snapshot="20220415"
 ARG seed_image="gentoo/stage3:musl-${upstream_snapshot}"
 
-FROM $seed_image as seed
+FROM $seed_image as seed_0
 ARG seed_image
 
 FROM $seed_image as catalyst
@@ -55,6 +55,12 @@ emerge \
   dev-vcs/git \
 ; \
 :;
+
+FROM catalyst as seed
+RUN rm --force --recursive /var/db/repos/gentoo
+RUN rm --force --recursive /var/tmp/*
+
+FROM catalyst as catalyst_run
 
 COPY dev-util/catalyst/ /var/db/repos/gentoo/dev-util/catalyst/
 

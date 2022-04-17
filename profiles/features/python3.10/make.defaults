@@ -1,5 +1,5 @@
-PYTHON_TARGETS="python3_10 -python3_8 -python3_9"
 PYTHON_SINGLE_TARGET="python3_10"
+PYTHON_TARGETS="python3_10"
 
 BOOTSTRAP_USE="${BOOTSTRAP_USE} python_targets_python3_10"
 BOOTSTRAP_USE="${BOOTSTRAP_USE} -python_targets_python3_9"
