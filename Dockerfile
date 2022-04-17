@@ -115,6 +115,12 @@ RUN \
 catalyst --file /etc/catalyst/specs/bootstrap/stage1.spec; \
 :;
 
+## TODO: more properly add in LDFLAGS to catalystrc somehow
+RUN \
+echo 'export BOOTSTRAP_USE="${BOOTSTRAP_USE} xml ssl curl_ssl_openssl"' >> /etc/catalyst/catalystrc; \
+echo 'export LDFLAGS="${LDFLAGS} -Wl,-O2 -Wl,--as-needed -Wl,-z,relro,-z,now -pie -fuse-ld=lld -rtlib=compiler-rt -unwindlib=libunwind"' >> /etc/catalyst/catalystrc; \
+:;
+
 RUN \
 --security=insecure \
 --mount=type=tmpfs,target=/run \
