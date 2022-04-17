@@ -127,22 +127,83 @@ RUN \
 catalyst --file /etc/catalyst/specs/bootstrap/stage3.spec; \
 :;
 
+
+RUN \
+mkdir --parent /tmp/001_catalyst; \
+tar \
+  --extract \
+  --file /var/tmp/catalyst/builds/clang-musl-container-bootstrap/stage3-amd64-clang-musl-container-bootstrap.tar.gz \
+  --directory=/tmp/001_catalyst/ \
+  . \
+; \
+:;
+
+FROM scratch as catalyst_001
+ARG upstream_snapshot
+ARG seed_image
+
+SHELL [ \
+  "/usr/bin/nice", \
+  "--adjustment=15", \
+  "/bin/bash", \
+  "-euxETo", \
+  "pipefail", \
+  "-c" \
+]
+
+COPY --from=catalyst_run /tmp/001_catalyst /
 COPY ./_assets/001_catalyst/etc/catalyst/ /etc/catalyst/
 
 RUN \
---security=insecure \
 --mount=type=tmpfs,target=/run \
-catalyst --file /etc/catalyst/specs/optimized/stage1.spec; \
+emerge-webrsync --revert="${upstream_snapshot}"; \
+:;
+
+RUN \
+--mount=type=tmpfs,target=/run \
+emerge \
+  --complete-graph \
+  --deep \
+  --jobs="$(nproc)" \
+  --load-average="$(($(nproc) * 2))" \
+  --newuse \
+  --update \
+  --verbose \
+  --with-bdeps=y \
+  @world \
+; \
+:;
+
+RUN \
+--mount=type=tmpfs,target=/run \
+emerge \
+  --complete-graph \
+  --deep \
+  --jobs="$(nproc)" \
+  --load-average="$(($(nproc) * 2))" \
+  --newuse \
+  --update \
+  --verbose \
+  --with-bdeps=y \
+  app-eselect/eselect-repository \
+  dev-vcs/git \
+; \
 :;
 
 RUN \
 --security=insecure \
 --mount=type=tmpfs,target=/run \
-catalyst --file /etc/catalyst/specs/optimized/stage2.spec; \
+catalyst --file /etc/catalyst/specs/optimized/stage1.spec || true; \
 :;
 
-RUN \
---security=insecure \
---mount=type=tmpfs,target=/run \
-catalyst --file /etc/catalyst/specs/optimized/stage3.spec; \
-:;
+#RUN \
+#--security=insecure \
+#--mount=type=tmpfs,target=/run \
+#catalyst --file /etc/catalyst/specs/optimized/stage2.spec; \
+#:;
+#
+#RUN \
+#--security=insecure \
+#--mount=type=tmpfs,target=/run \
+#catalyst --file /etc/catalyst/specs/optimized/stage3.spec; \
+#:;
