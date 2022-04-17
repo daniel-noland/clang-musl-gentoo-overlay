@@ -1,0 +1,45 @@
+#!/bin/bash
+
+CATALYST_USE="${CATALYST_USE} -X"
+CATALYST_USE="${CATALYST_USE} -accessibility"
+CATALYST_USE="${CATALYST_USE} -bash-completion"
+CATALYST_USE="${CATALYST_USE} -bluetooth"
+CATALYST_USE="${CATALYST_USE} -branding"
+CATALYST_USE="${CATALYST_USE} -doc"
+CATALYST_USE="${CATALYST_USE} -examples"
+CATALYST_USE="${CATALYST_USE} -man"
+CATALYST_USE="${CATALYST_USE} -ncurses"
+CATALYST_USE="${CATALYST_USE} -sqlite"
+CATALYST_USE="${CATALYST_USE} -systemd"
+CATALYST_USE="${CATALYST_USE} -test"
+CATALYST_USE="${CATALYST_USE} -gold" # gold is basically a dead project as I understand things.  We want to use lld anyway.
+
+export ABI_X86="64"
+CATALYST_USE="${CATALYST_USE} -abi_x86_32"
+CATALYST_USE="${CATALYST_USE} -abi_x86_x32"
+CATALYST_USE="${CATALYST_USE} abi_x86_64"
+
+export LLVM_TARGETS="X86"
+CATALYST_USE="${CATALYST_USE} -llvm_targets_AArch64"
+CATALYST_USE="${CATALYST_USE} -llvm_targets_AMDGPU"
+CATALYST_USE="${CATALYST_USE} -llvm_targets_ARM"
+CATALYST_USE="${CATALYST_USE} -llvm_targets_AVR"
+CATALYST_USE="${CATALYST_USE} -llvm_targets_BPF"
+CATALYST_USE="${CATALYST_USE} -llvm_targets_Hexagon"
+CATALYST_USE="${CATALYST_USE} -llvm_targets_Lanai"
+CATALYST_USE="${CATALYST_USE} -llvm_targets_MSP430"
+CATALYST_USE="${CATALYST_USE} -llvm_targets_Mips"
+CATALYST_USE="${CATALYST_USE} -llvm_targets_NVPTX"
+CATALYST_USE="${CATALYST_USE} -llvm_targets_PowerPC"
+CATALYST_USE="${CATALYST_USE} -llvm_targets_RISCV"
+CATALYST_USE="${CATALYST_USE} -llvm_targets_Sparc"
+CATALYST_USE="${CATALYST_USE} -llvm_targets_SystemZ"
+CATALYST_USE="${CATALYST_USE} -llvm_targets_VE"
+CATALYST_USE="${CATALYST_USE} -llvm_targets_WebAssembly"
+CATALYST_USE="${CATALYST_USE} -llvm_targets_XCore"
+
+# Turn off iso to prevent catalyst from pulling in a bunch of stuff we don't need or want here.
+CATALYST_USE="${CATALYST_USE} -iso"
+
+export CATALYST_USE
+export USE="${CATALYST_USE}"

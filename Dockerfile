@@ -107,7 +107,7 @@ mksquashfs gentoo /var/tmp/catalyst/snapshots/gentoo-snapshot.sqfs; \
 
 COPY ./_assets/000_catalyst/etc/portage/ /etc/portage/
 
-COPY ./_assets/000_catalyst/etc/catalyst/specs/ /etc/catalyst/specs/
+COPY ./_assets/000_catalyst/etc/catalyst/ /etc/catalyst/
 
 RUN \
 --security=insecure \
