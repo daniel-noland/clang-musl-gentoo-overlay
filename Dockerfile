@@ -98,6 +98,12 @@ tar \
 ;
 
 COPY ./profiles/ /var/db/repos/gentoo/profiles/
+COPY sys-apps/attr/ /var/db/repos/gentoo/sys-apps/attr/
+COPY sys-libs/musl/ /var/db/repos/gentoo/sys-libs/musl/
+RUN \
+ebuild /var/db/repos/gentoo/sys-apps/attr/attr-2.5.1.ebuild manifest; \
+ebuild /var/db/repos/gentoo/sys-libs/musl/musl-1.2.2-r7.ebuild manifest; \
+:;
 
 RUN \
 mkdir --parent /var/tmp/catalyst/snapshots; \
@@ -107,7 +113,7 @@ mksquashfs gentoo /var/tmp/catalyst/snapshots/gentoo-snapshot.sqfs; \
 
 COPY ./_assets/000_catalyst/etc/portage/ /etc/portage/
 
-COPY ./_assets/000_catalyst/etc/catalyst/ /etc/catalyst/
+COPY ./_assets/000_catalyst/etc/catalyst/specs/bootstrap/stage1.spec /etc/catalyst/specs/bootstrap/stage1.spec
 
 RUN \
 --security=insecure \
@@ -121,11 +127,14 @@ echo 'export BOOTSTRAP_USE="${BOOTSTRAP_USE} xml ssl curl_ssl_openssl"' >> /etc/
 echo 'export LDFLAGS="${LDFLAGS} -Wl,-O2 -Wl,--as-needed -Wl,-z,relro,-z,now -pie -fuse-ld=lld -rtlib=compiler-rt -unwindlib=libunwind"' >> /etc/catalyst/catalystrc; \
 :;
 
+COPY ./_assets/000_catalyst/etc/catalyst/specs/bootstrap/stage2.spec /etc/catalyst/specs/bootstrap/stage2.spec
 RUN \
 --security=insecure \
 --mount=type=tmpfs,target=/run \
 catalyst --file /etc/catalyst/specs/bootstrap/stage2.spec; \
 :;
+
+COPY ./_assets/000_catalyst/etc/catalyst/specs/bootstrap/stage3.spec /etc/catalyst/specs/bootstrap/stage3.spec
 
 RUN \
 --security=insecure \
@@ -133,68 +142,14 @@ RUN \
 catalyst --file /etc/catalyst/specs/bootstrap/stage3.spec; \
 :;
 
-
-RUN \
-mkdir --parent /tmp/001_catalyst; \
-tar \
-  --extract \
-  --file /var/tmp/catalyst/builds/clang-musl-container-bootstrap/stage3-amd64-clang-musl-container-bootstrap.tar.gz \
-  --directory=/tmp/001_catalyst/ \
-  . \
-; \
-:;
-
-FROM scratch as catalyst_001
-ARG upstream_snapshot
-ARG seed_image
-
-SHELL [ \
-  "/usr/bin/nice", \
-  "--adjustment=15", \
-  "/bin/bash", \
-  "-euxETo", \
-  "pipefail", \
-  "-c" \
-]
-
-COPY --from=catalyst_run /tmp/001_catalyst /
 COPY ./_assets/001_catalyst/etc/catalyst/ /etc/catalyst/
 
+## TODO: more properly add in LDFLAGS to catalystrc somehow
 RUN \
---mount=type=tmpfs,target=/run \
-emerge-webrsync --revert="${upstream_snapshot}"; \
+echo 'export BOOTSTRAP_USE="${BOOTSTRAP_USE} xml ssl curl_ssl_openssl"' >> /etc/catalyst/catalystrc; \
+echo 'export LDFLAGS="${LDFLAGS} -Wl,-O2 -Wl,--as-needed -Wl,-z,relro,-z,now -pie -fuse-ld=lld -rtlib=compiler-rt -unwindlib=libunwind"' >> /etc/catalyst/catalystrc; \
 :;
 
-RUN \
---mount=type=tmpfs,target=/run \
-emerge \
-  --complete-graph \
-  --deep \
-  --jobs="$(nproc)" \
-  --load-average="$(($(nproc) * 2))" \
-  --newuse \
-  --update \
-  --verbose \
-  --with-bdeps=y \
-  @world \
-; \
-:;
-
-RUN \
---mount=type=tmpfs,target=/run \
-emerge \
-  --complete-graph \
-  --deep \
-  --jobs="$(nproc)" \
-  --load-average="$(($(nproc) * 2))" \
-  --newuse \
-  --update \
-  --verbose \
-  --with-bdeps=y \
-  app-eselect/eselect-repository \
-  dev-vcs/git \
-; \
-:;
 
 RUN \
 --security=insecure \

@@ -1,5 +1,7 @@
 #!/bin/bash
 
+_MINIMIZE="minimal"
+
 _MINIMIZE="${_MINIMIZE} -X"
 _MINIMIZE="${_MINIMIZE} -accessibility"
 _MINIMIZE="${_MINIMIZE} -bash-completion"
@@ -20,13 +22,10 @@ _MINIMIZE="${_MINIMIZE} -kde"
 _MINIMIZE="${_MINIMIZE} -latex"
 _MINIMIZE="${_MINIMIZE} -man"
 _MINIMIZE="${_MINIMIZE} -ncurses"
-_MINIMIZE="${_MINIMIZE} -nls"
-_MINIMIZE="${_MINIMIZE} -openmp"
 _MINIMIZE="${_MINIMIZE} -perl"
 _MINIMIZE="${_MINIMIZE} -plasma"
 _MINIMIZE="${_MINIMIZE} -qt5"
 _MINIMIZE="${_MINIMIZE} -ruby"
-_MINIMIZE="${_MINIMIZE} -sqlite"
 _MINIMIZE="${_MINIMIZE} -systemd"
 _MINIMIZE="${_MINIMIZE} -test"
 _MINIMIZE="${_MINIMIZE} -wxwidgets"
@@ -55,8 +54,8 @@ _MINIMIZE="${_MINIMIZE} -llvm_targets_VE"
 _MINIMIZE="${_MINIMIZE} -llvm_targets_WebAssembly"
 _MINIMIZE="${_MINIMIZE} -llvm_targets_XCore"
 
-export CATALYST_USE="${CATALYST_USE} ${_MINIMIZE}"
 export BOOTSTRAP_USE="${BOOTSTRAP_USE} ${_MINIMIZE}"
+export CATALYST_USE="${CATALYST_USE} ${_MINIMIZE}"
 export USE="${USE} ${_MINIMIZE}"
 
 export ADDR2LINE="llvm-addr2line"
