@@ -113,3 +113,15 @@ RUN \
 --security=insecure \
 catalyst --file /etc/catalyst/specs/bootstrap/stage1.spec; \
 :;
+
+RUN \
+--security=insecure \
+--mount=type=tmpfs,target=/run \
+catalyst --file /etc/catalyst/specs/bootstrap/stage2.spec; \
+:;
+
+RUN \
+--security=insecure \
+--mount=type=tmpfs,target=/run \
+catalyst --file /etc/catalyst/specs/bootstrap/stage3.spec; \
+:;

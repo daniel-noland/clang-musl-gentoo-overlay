@@ -1,5 +1,10 @@
+# bootstrap USE for stage1
+
+# curl needed by cmake
+BOOTSTRAP_USE="${BOOTSTRAP_USE} ssl curl_ssl_openssl"
+
 # Clang needs this
-BOOTSTRAP_USE="${BOOTSTRAP_USE} python_single_target_python3_9"
+BOOTSTRAP_USE="${BOOTSTRAP_USE} python_single_target_python3_10"
 
 # sys-devel/llvm
 BOOTSTRAP_USE="${BOOTSTRAP_USE} -gold"
@@ -11,7 +16,6 @@ BOOTSTRAP_USE="${BOOTSTRAP_USE} compiler-rt clang libunwind"
 BOOTSTRAP_USE="${BOOTSTRAP_USE} default-compiler-rt default-lld default-libcxx llvm-libunwind"
 
 # sys-devel/clang-runtime
-# sanitizers are disabled for now
 BOOTSTRAP_USE="${BOOTSTRAP_USE} libcxx -sanitize"
 
 # sys-libs/libcxxabi

@@ -1,0 +1,5 @@
+# GCC is not required for stage 1 after initial bootstrapping
+-sys-devel/gcc
+-sys-devel/gcc-config
+-sys-devel/binutils
+-sys-devel/binutils-config
