@@ -1,15 +1,15 @@
 #!/bin/bash
 
-_MINIMIZE="minimal"
-
 _MINIMIZE="${_MINIMIZE} -X"
 _MINIMIZE="${_MINIMIZE} -accessibility"
 _MINIMIZE="${_MINIMIZE} -bash-completion"
+_MINIMIZE="${_MINIMIZE} -berkdb"
 _MINIMIZE="${_MINIMIZE} -bluetooth"
 _MINIMIZE="${_MINIMIZE} -branding"
 _MINIMIZE="${_MINIMIZE} -doc"
 _MINIMIZE="${_MINIMIZE} -examples"
 _MINIMIZE="${_MINIMIZE} -fortran"
+_MINIMIZE="${_MINIMIZE} -gdbm"
 _MINIMIZE="${_MINIMIZE} -gnome"
 _MINIMIZE="${_MINIMIZE} -gold"
 _MINIMIZE="${_MINIMIZE} -gtk"
@@ -28,6 +28,7 @@ _MINIMIZE="${_MINIMIZE} -qt5"
 _MINIMIZE="${_MINIMIZE} -ruby"
 _MINIMIZE="${_MINIMIZE} -systemd"
 _MINIMIZE="${_MINIMIZE} -test"
+_MINIMIZE="${_MINIMIZE} -tk"
 _MINIMIZE="${_MINIMIZE} -wxwidgets"
 
 export ABI_X86="64"
@@ -53,6 +54,9 @@ _MINIMIZE="${_MINIMIZE} -llvm_targets_SystemZ"
 _MINIMIZE="${_MINIMIZE} -llvm_targets_VE"
 _MINIMIZE="${_MINIMIZE} -llvm_targets_WebAssembly"
 _MINIMIZE="${_MINIMIZE} -llvm_targets_XCore"
+
+## Enable a few extra flags to make python3.10 build in stage 2 (for stupid ossaudio module I can't turn off)
+#_PYTHON3_10_EXTRA_FLAGS="sqlite ssl xml"
 
 export BOOTSTRAP_USE="${BOOTSTRAP_USE} ${_MINIMIZE}"
 export CATALYST_USE="${CATALYST_USE} ${_MINIMIZE}"

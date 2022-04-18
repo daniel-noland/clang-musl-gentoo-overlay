@@ -1,2 +1,2 @@
 # portage breaks without adding
-dev-lang/python xml -gdbm libedit ncurses -readline sqlite ssl tk
+dev-lang/python -bluetooth -examples gdbm libedit ncurses readline sqlite ssl tk  xml

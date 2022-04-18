@@ -100,9 +100,11 @@ tar \
 COPY ./profiles/ /var/db/repos/gentoo/profiles/
 COPY sys-apps/attr/ /var/db/repos/gentoo/sys-apps/attr/
 COPY sys-libs/musl/ /var/db/repos/gentoo/sys-libs/musl/
+COPY ./dev-lang/python/ /var/db/repos/gentoo/dev-lang/python/
 RUN \
 ebuild /var/db/repos/gentoo/sys-apps/attr/attr-2.5.1.ebuild manifest; \
 ebuild /var/db/repos/gentoo/sys-libs/musl/musl-1.2.2-r7.ebuild manifest; \
+ebuild /var/db/repos/gentoo/dev-lang/python/python-3.10.3.ebuild manifest; \
 :;
 
 RUN \
@@ -113,6 +115,8 @@ mksquashfs gentoo /var/tmp/catalyst/snapshots/gentoo-snapshot.sqfs; \
 
 COPY ./_assets/000_catalyst/etc/portage/ /etc/portage/
 
+COPY ./_assets/000_catalyst/etc/catalyst/catalyst.conf /etc/catalyst/
+COPY ./_assets/000_catalyst/etc/catalyst/catalystrc /etc/catalyst
 COPY ./_assets/000_catalyst/etc/catalyst/specs/bootstrap/stage1.spec /etc/catalyst/specs/bootstrap/stage1.spec
 
 RUN \
