@@ -103,10 +103,9 @@ src_prepare() {
 	rm -fr Modules/_ctypes/libffi* || die
 	rm -fr Modules/zlib || die
 
-	patch -p0 < "${FILESDIR}/ossaudiodev.c.patch"
-
 	local PATCHES=(
 		"${WORKDIR}/${PATCHSET}"
+		"${FILESDIR}/remove-ossaudiodev.patch"
 	)
 
 	default

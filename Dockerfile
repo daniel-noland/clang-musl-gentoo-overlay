@@ -127,7 +127,6 @@ catalyst --file /etc/catalyst/specs/bootstrap/stage1.spec; \
 
 ## TODO: more properly add in LDFLAGS to catalystrc somehow
 RUN \
-echo 'export BOOTSTRAP_USE="${BOOTSTRAP_USE} xml ssl curl_ssl_openssl"' >> /etc/catalyst/catalystrc; \
 echo 'export LDFLAGS="${LDFLAGS} -Wl,-O2 -Wl,--as-needed -Wl,-z,relro,-z,now -pie -fuse-ld=lld -rtlib=compiler-rt -unwindlib=libunwind"' >> /etc/catalyst/catalystrc; \
 :;
 
@@ -135,40 +134,31 @@ COPY ./_assets/000_catalyst/etc/catalyst/specs/bootstrap/stage2.spec /etc/cataly
 RUN \
 --security=insecure \
 --mount=type=tmpfs,target=/run \
-catalyst --file /etc/catalyst/specs/bootstrap/stage2.spec; \
+catalyst --file /etc/catalyst/specs/bootstrap/stage2.spec || true; \
 :;
 
-COPY ./_assets/000_catalyst/etc/catalyst/specs/bootstrap/stage3.spec /etc/catalyst/specs/bootstrap/stage3.spec
-
-RUN \
---security=insecure \
---mount=type=tmpfs,target=/run \
-catalyst --file /etc/catalyst/specs/bootstrap/stage3.spec; \
-:;
-
-COPY ./_assets/001_catalyst/etc/catalyst/ /etc/catalyst/
-
-## TODO: more properly add in LDFLAGS to catalystrc somehow
-RUN \
-echo 'export BOOTSTRAP_USE="${BOOTSTRAP_USE} xml ssl curl_ssl_openssl"' >> /etc/catalyst/catalystrc; \
-echo 'export LDFLAGS="${LDFLAGS} -Wl,-O2 -Wl,--as-needed -Wl,-z,relro,-z,now -pie -fuse-ld=lld -rtlib=compiler-rt -unwindlib=libunwind"' >> /etc/catalyst/catalystrc; \
-:;
-
-
-RUN \
---security=insecure \
---mount=type=tmpfs,target=/run \
-catalyst --file /etc/catalyst/specs/optimized/stage1.spec || true; \
-:;
-
+#COPY ./_assets/000_catalyst/etc/catalyst/specs/bootstrap/stage3.spec /etc/catalyst/specs/bootstrap/stage3.spec
+#
 #RUN \
 #--security=insecure \
 #--mount=type=tmpfs,target=/run \
-#catalyst --file /etc/catalyst/specs/optimized/stage2.spec; \
+#catalyst --file /etc/catalyst/specs/bootstrap/stage3.spec; \
 #:;
 #
 #RUN \
 #--security=insecure \
 #--mount=type=tmpfs,target=/run \
-#catalyst --file /etc/catalyst/specs/optimized/stage3.spec; \
+#catalyst --file /etc/catalyst/specs/optimized/stage1.spec || true; \
 #:;
+#
+##RUN \
+##--security=insecure \
+##--mount=type=tmpfs,target=/run \
+##catalyst --file /etc/catalyst/specs/optimized/stage2.spec; \
+##:;
+##
+##RUN \
+##--security=insecure \
+##--mount=type=tmpfs,target=/run \
+##catalyst --file /etc/catalyst/specs/optimized/stage3.spec; \
+##:;

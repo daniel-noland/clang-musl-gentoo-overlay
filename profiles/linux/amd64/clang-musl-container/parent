@@ -1,7 +1,4 @@
 ../../../default/linux/amd64/17.0/musl
-../../../features/container
-../../../features/minimal
-../../../features/minimal/with-portage-fix
 ../../../features/python3.10
 ../../../features/unified-usr
 ../../../features/llvm/amd64
