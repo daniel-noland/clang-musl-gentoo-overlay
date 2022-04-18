@@ -134,7 +134,7 @@ COPY ./_assets/000_catalyst/etc/catalyst/specs/bootstrap/stage2.spec /etc/cataly
 RUN \
 --security=insecure \
 --mount=type=tmpfs,target=/run \
-catalyst --file /etc/catalyst/specs/bootstrap/stage2.spec || true; \
+catalyst --file /etc/catalyst/specs/bootstrap/stage2.spec; \
 :;
 
 #COPY ./_assets/000_catalyst/etc/catalyst/specs/bootstrap/stage3.spec /etc/catalyst/specs/bootstrap/stage3.spec

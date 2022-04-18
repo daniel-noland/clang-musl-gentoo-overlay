@@ -1,0 +1,3 @@
+# required by dev-python/setuptools
+# required by dev-python/certifi
+>=dev-lang/python-3.10.3 xml
