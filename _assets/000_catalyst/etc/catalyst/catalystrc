@@ -55,8 +55,13 @@ _MINIMIZE="${_MINIMIZE} -llvm_targets_VE"
 _MINIMIZE="${_MINIMIZE} -llvm_targets_WebAssembly"
 _MINIMIZE="${_MINIMIZE} -llvm_targets_XCore"
 
+_USE_SET="${_MINIMIZE}"
+
 # Enable xml for python in stage 2
-_USE_SET="${_MINIMIZE} xml"
+_USE_SET="${_USE_SET} xml"
+
+# Enable static-libs for openmp in stage 3 (no, I don't seem to be able to turn off openmp without breaking the build)
+_USE_SET="${_USE_SET} static-libs"
 
 export BOOTSTRAP_USE="${BOOTSTRAP_USE} ${_USE_SET}"
 export CATALYST_USE="${CATALYST_USE} ${_USE_SET}"

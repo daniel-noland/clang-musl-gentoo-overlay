@@ -137,28 +137,35 @@ RUN \
 catalyst --file /etc/catalyst/specs/bootstrap/stage2.spec; \
 :;
 
-#COPY ./_assets/000_catalyst/etc/catalyst/specs/bootstrap/stage3.spec /etc/catalyst/specs/bootstrap/stage3.spec
+COPY ./_assets/000_catalyst/etc/catalyst/specs/bootstrap/stage3.spec /etc/catalyst/specs/bootstrap/stage3.spec
+
+RUN \
+--security=insecure \
+--mount=type=tmpfs,target=/run \
+catalyst --file /etc/catalyst/specs/bootstrap/stage3.spec || true; \
+:;
+
+#COPY ./_assets/001_catalyst/etc/catalyst/catalystrc /etc/catalyst/
+#COPY ./_assets/001_catalyst/etc/catalyst/specs/bootstrapped/stage1.spec /etc/catalyst/specs/bootstrapped/
 #
 #RUN \
 #--security=insecure \
 #--mount=type=tmpfs,target=/run \
-#catalyst --file /etc/catalyst/specs/bootstrap/stage3.spec; \
+#catalyst --file /etc/catalyst/specs/optimized/stage1.spec; \
 #:;
+#
+#COPY ./_assets/001_catalyst/etc/catalyst/specs/bootstrapped/stage2.spec /etc/catalyst/specs/bootstrapped/
 #
 #RUN \
 #--security=insecure \
 #--mount=type=tmpfs,target=/run \
-#catalyst --file /etc/catalyst/specs/optimized/stage1.spec || true; \
+#catalyst --file /etc/catalyst/specs/optimized/stage2.spec; \
 #:;
 #
-##RUN \
-##--security=insecure \
-##--mount=type=tmpfs,target=/run \
-##catalyst --file /etc/catalyst/specs/optimized/stage2.spec; \
-##:;
-##
-##RUN \
-##--security=insecure \
-##--mount=type=tmpfs,target=/run \
-##catalyst --file /etc/catalyst/specs/optimized/stage3.spec; \
-##:;
+#COPY ./_assets/001_catalyst/etc/catalyst/specs/bootstrapped/stage3.spec /etc/catalyst/specs/bootstrapped/
+#
+#RUN \
+#--security=insecure \
+#--mount=type=tmpfs,target=/run \
+#catalyst --file /etc/catalyst/specs/optimized/stage3.spec; \
+#:;
