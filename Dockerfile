@@ -10,9 +10,7 @@ SHELL [ \
   "/bin/bash", \
   "-euxETo", \
   "pipefail", \
-  "-c", \
-  "/usr/bin/nice", \
-  "--adjustment=15" \
+  "-c" \
 ]
 
 RUN \
@@ -76,6 +74,10 @@ emerge \
 
 RUN \
 emerge --depclean; \
+:;
+
+RUN \
+env-update; \
 :;
 
 FROM seed_build as seed
@@ -144,42 +146,133 @@ RUN \
 catalyst --file /etc/catalyst/specs/bootstrap/stage1.spec; \
 :;
 
+
+RUN \
+mkdir /tmp/seed_2; \
+tar \
+  -xf /var/tmp/catalyst/builds/clang-musl-container-bootstrap/stage1-amd64-clang-musl-container-bootstrap.tar.gz \
+  --directory=/tmp/seed_2 \
+  . \
+; \
+:;
+
+FROM scratch as seed_2
+
+COPY --from=catalyst_run /tmp/seed_2 /
+
+SHELL [ \
+  "/bin/bash", \
+  "-euxETo", \
+  "pipefail", \
+  "-c" \
+]
+
+RUN \
+env-update; \
+:;
+
+RUN \
+for binary in /usr/lib/llvm/14/bin/*; do \
+  ln --symbolic --relative "${binary}" "/usr/bin/$(basename "${binary}")"; \
+done; \
+:;
+
+RUN \
+for library in /usr/lib/llvm/14/lib/*.so; do \
+  if [[ -e "/usr/lib/$(basename "${library}")" ]]; then \
+    rm "/usr/lib/$(basename "${library}")"; \
+  fi; \
+  ln --symbolic --relative "${library}" "/usr/lib/$(basename "${library}")"; \
+done; \
+:;
+
+RUN \
+for library in /usr/lib/llvm/14/lib/*.a; do \
+  if [[ -e "/usr/lib/$(basename "${library}")" ]]; then \
+    rm "/usr/lib/$(basename "${library}")"; \
+  fi; \
+  ln --symbolic --relative "${library}" "/usr/lib/$(basename "${library}")"; \
+done; \
+:;
+
+RUN \
+for program in \
+  addr2line \
+  ar \
+  as \
+  nm \
+  objcopy \
+  objdump \
+  ranlib \
+  readelf \
+  strings \
+  strip \
+; \
+do \
+  rm --force "$(which "${program}")"; \
+  ln --symbolic --relative "/usr/bin/llvm-${program}" "/usr/bin/${program}"; \
+done \
+; \
+ln --symbolic --relative "/usr/bin/clang" "/usr/bin/cc"; \
+ln --symbolic --relative "/usr/bin/clang++" "/usr/bin/c++"; \
+ln --symbolic --relative "/usr/bin/ld.lld" "/usr/bin/ld"; \
+:;
+
+RUN which bzip2 && file $(which bzip2) && sleep 15
+
+FROM catalyst_run as catalyst_run_2
+
+COPY --from=seed_2 / /tmp/seed_2
+
+RUN \
+mkdir --parent /var/tmp/catalyst/builds/; \
+tar \
+  --create \
+  --directory=/tmp/seed_2 \
+  --file /var/tmp/catalyst/builds/seed_2.tar \
+  . \
+;
+
+RUN echo 'export myGCC="sys-devel/clang"' >> /etc/catalyst/catalystrc
+RUN echo 'export myBINUTILS="sys-devel/llvm"' >> /etc/catalyst/catalystrc
+RUN echo 'export myEXTRA="dev-lang/perl sys-devel/lld sys-libs/compiler-rt sys-devel/clang-runtime sys-libs/libcxx sys-libs/libcxxabi sys-libs/llvm-libunwind sys-devel/llvm-common sys-devel/clang-common"' >> /etc/catalyst/catalystrc
+
 COPY ./_assets/000_catalyst/etc/catalyst/specs/bootstrap/stage2.spec /etc/catalyst/specs/bootstrap/stage2.spec
 RUN \
 --security=insecure \
 --mount=type=tmpfs,target=/run \
-catalyst --file /etc/catalyst/specs/bootstrap/stage2.spec; \
+catalyst -p --file /etc/catalyst/specs/bootstrap/stage2.spec; \
 :;
 
-COPY ./_assets/000_catalyst/etc/catalyst/specs/bootstrap/stage3.spec /etc/catalyst/specs/bootstrap/stage3.spec
-
-RUN \
---security=insecure \
---mount=type=tmpfs,target=/run \
-catalyst --file /etc/catalyst/specs/bootstrap/stage3.spec || true; \
-:;
-
-COPY ./_assets/001_catalyst/etc/catalyst/catalystrc /etc/catalyst/
-COPY ./_assets/001_catalyst/etc/catalyst/specs/bootstrapped/stage1.spec /etc/catalyst/specs/bootstrapped/
-
-RUN \
---security=insecure \
---mount=type=tmpfs,target=/run \
-catalyst --file /etc/catalyst/specs/optimized/stage1.spec; \
-:;
-
-COPY ./_assets/001_catalyst/etc/catalyst/specs/bootstrapped/stage2.spec /etc/catalyst/specs/bootstrapped/
-
-RUN \
---security=insecure \
---mount=type=tmpfs,target=/run \
-catalyst --file /etc/catalyst/specs/optimized/stage2.spec; \
-:;
-
-COPY ./_assets/001_catalyst/etc/catalyst/specs/bootstrapped/stage3.spec /etc/catalyst/specs/bootstrapped/
-
-RUN \
---security=insecure \
---mount=type=tmpfs,target=/run \
-catalyst --file /etc/catalyst/specs/optimized/stage3.spec; \
-:;
+#COPY ./_assets/000_catalyst/etc/catalyst/specs/bootstrap/stage3.spec /etc/catalyst/specs/bootstrap/stage3.spec
+#
+#RUN \
+#--security=insecure \
+#--mount=type=tmpfs,target=/run \
+#catalyst --file /etc/catalyst/specs/bootstrap/stage3.spec || true; \
+#:;
+#
+#COPY ./_assets/001_catalyst/etc/catalyst/catalystrc /etc/catalyst/
+#COPY ./_assets/001_catalyst/etc/catalyst/specs/bootstrapped/stage1.spec /etc/catalyst/specs/bootstrapped/
+#
+#RUN \
+#--security=insecure \
+#--mount=type=tmpfs,target=/run \
+#catalyst --file /etc/catalyst/specs/optimized/stage1.spec; \
+#:;
+#
+#COPY ./_assets/001_catalyst/etc/catalyst/specs/bootstrapped/stage2.spec /etc/catalyst/specs/bootstrapped/
+#
+#RUN \
+#--security=insecure \
+#--mount=type=tmpfs,target=/run \
+#catalyst --file /etc/catalyst/specs/optimized/stage2.spec; \
+#:;
+#
+#COPY ./_assets/001_catalyst/etc/catalyst/specs/bootstrapped/stage3.spec /etc/catalyst/specs/bootstrapped/
+#
+#RUN \
+#--security=insecure \
+#--mount=type=tmpfs,target=/run \
+#catalyst --file /etc/catalyst/specs/optimized/stage3.spec; \
+#:;
