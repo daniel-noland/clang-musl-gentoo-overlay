@@ -2,3 +2,26 @@
 export myGCC="sys-devel/clang"
 export myBINUTILS="sys-devel/llvm"
 export myEXTRA="dev-lang/perl sys-devel/lld sys-libs/compiler-rt sys-devel/clang-runtime sys-libs/libcxx sys-libs/libcxxabi sys-libs/llvm-libunwind sys-devel/llvm-common sys-devel/clang-common"
+
+source /etc/profile
+
+export PATH="/usr/lib/llvm/14/bin:$PATH"
+
+export ADDR2LINE="llvm-addr2line"
+export AR="llvm-ar"
+export AS="llvm-as"
+export CC="clang"
+export CXX="clang++"
+export LD="ld.lld"
+export NM="llvm-nm"
+export OBJCOPY="llvm-objcopy"
+export OBJDUMP="llvm-objdump"
+export RANLIB="llvm-ranlib"
+export READELF="llvm-readelf"
+export STRINGS="llvm-strings"
+export STRIP="llvm-strip"
+
+export CFLAGS="-fPIC -fstack-protector-strong -D_FORTIFY_SOURCE=2 -O3 -march=native -pipe -flto=thin"
+export CXXFLAGS="${CFLAGS}"
+
+LDFLAGS="-Wl,-O2 -Wl,--as-needed -Wl,-z,relro,-z,now -pie -fuse-ld=lld -unwindlib=libunwind"

@@ -162,13 +162,79 @@ RUN \
 catalyst -p --file /etc/catalyst/specs/bootstrap/stage3.spec; \
 :;
 
+RUN \
+mkdir --parent /tmp/bootstrap-stage3; \
+tar \
+  --extract \
+  --file /var/tmp/catalyst/builds/clang-musl-container-bootstrap/stage3-amd64-clang-musl-container-bootstrap.tar.gz \
+  --directory=/tmp/bootstrap-stage3 \
+; \
+:;
+
+FROM scratch as bootstrap_objective
+
+COPY --from=catalyst_run /tmp/bootstrap-stage3 /
+
+SHELL [ "/bin/bash", "-euxETo", "pipefail", "-c" ]
+
+RUN \
+env-update; \
+:;
+
+RUN \
+find /usr/bin -xtype l -exec echo rm {} \; ; \
+:;
+
+RUN \
+for binary in /usr/lib/llvm/14/bin/*; do \
+  ln --symbolic --relative "${binary}" "/usr/bin/$(basename "${binary}")"; \
+done; \
+:;
+
+RUN \
+for library in /usr/lib/llvm/14/lib/*.so; do \
+  if [[ -e "/usr/lib/$(basename "${library}")" ]]; then \
+    rm "/usr/lib/$(basename "${library}")"; \
+  fi; \
+  ln --symbolic --relative "${library}" "/usr/lib/$(basename "${library}")"; \
+done; \
+:;
+
+RUN \
+for library in /usr/lib/llvm/14/lib/*.a; do \
+  if [[ -e "/usr/lib/$(basename "${library}")" ]]; then \
+    rm "/usr/lib/$(basename "${library}")"; \
+  fi; \
+  ln --symbolic --relative "${library}" "/usr/lib/$(basename "${library}")"; \
+done; \
+:;
+
+RUN \
+find /usr/bin -xtype l -exec rm {} \; ; \
+ln --symbolic --relative "/usr/bin/clang" "/usr/bin/cc"; \
+ln --symbolic --relative "/usr/bin/clang++" "/usr/bin/c++"; \
+:;
+
+FROM catalyst_run as catalyst_run_2
+
+COPY --from=bootstrap_objective / /tmp/bootstrap_objective
+
+RUN \
+tar \
+ --create \
+ --directory=/tmp/bootstrap_objective \
+ --file /var/tmp/catalyst/builds/bootstrap.tar \
+ . \
+; \
+:;
+
 COPY ./_assets/001_catalyst/etc/catalyst/catalystrc /etc/catalyst/
 COPY ./_assets/001_catalyst/etc/catalyst/specs/bootstrapped/stage1.spec /etc/catalyst/specs/bootstrapped/
 
 RUN \
 --security=insecure \
 --mount=type=tmpfs,target=/run \
-catalyst -p --file /etc/catalyst/specs/optimized/stage1.spec; \
+catalyst --purge --file /etc/catalyst/specs/bootstrapped/stage1.spec; \
 :;
 
 COPY ./_assets/001_catalyst/etc/catalyst/specs/bootstrapped/stage2.spec /etc/catalyst/specs/bootstrapped/
@@ -176,7 +242,7 @@ COPY ./_assets/001_catalyst/etc/catalyst/specs/bootstrapped/stage2.spec /etc/cat
 RUN \
 --security=insecure \
 --mount=type=tmpfs,target=/run \
-catalyst -p --file /etc/catalyst/specs/optimized/stage2.spec; \
+catalyst -p --file /etc/catalyst/specs/bootstrapped/stage2.spec; \
 :;
 
 COPY ./_assets/001_catalyst/etc/catalyst/specs/bootstrapped/stage3.spec /etc/catalyst/specs/bootstrapped/
@@ -184,5 +250,5 @@ COPY ./_assets/001_catalyst/etc/catalyst/specs/bootstrapped/stage3.spec /etc/cat
 RUN \
 --security=insecure \
 --mount=type=tmpfs,target=/run \
-catalyst -p --file /etc/catalyst/specs/optimized/stage3.spec; \
+catalyst -p --file /etc/catalyst/specs/bootstrapped/stage3.spec; \
 :;
