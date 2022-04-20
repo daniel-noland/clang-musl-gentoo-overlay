@@ -1,1 +1,4 @@
 #!/bin/bash
+export myGCC="sys-devel/clang"
+export myBINUTILS="sys-devel/llvm"
+export myEXTRA="dev-lang/perl sys-devel/lld sys-libs/compiler-rt sys-devel/clang-runtime sys-libs/libcxx sys-libs/libcxxabi sys-libs/llvm-libunwind sys-devel/llvm-common sys-devel/clang-common"
