@@ -2,4 +2,4 @@
 #arch   profile_directory                             status
 
 amd64   linux/amd64/clang-musl-container/bootstrap    exp
-amd64   linux/amd64/clang-musl-container/bootstraped  exp
+amd64   linux/amd64/clang-musl-container/bootstrapped  exp
