@@ -177,6 +177,36 @@ RUN \
 find /usr/bin -xtype l -exec echo rm {} \; ; \
 :;
 
+RUN \
+for binary in /usr/lib/llvm/14/bin/*; do \
+  ln --symbolic --relative "${binary}" "/usr/bin/$(basename "${binary}")"; \
+done; \
+:;
+
+RUN \
+for library in /usr/lib/llvm/14/lib/*.so; do \
+  if [[ -e "/usr/lib/$(basename "${library}")" ]]; then \
+    rm "/usr/lib/$(basename "${library}")"; \
+  fi; \
+  ln --symbolic --relative "${library}" "/usr/lib/$(basename "${library}")"; \
+done; \
+:;
+
+RUN \
+for library in /usr/lib/llvm/14/lib/*.a; do \
+  if [[ -e "/usr/lib/$(basename "${library}")" ]]; then \
+    rm "/usr/lib/$(basename "${library}")"; \
+  fi; \
+  ln --symbolic --relative "${library}" "/usr/lib/$(basename "${library}")"; \
+done; \
+:;
+
+RUN \
+find /usr/bin -xtype l -exec rm {} \; ; \
+ln --symbolic --relative "/usr/bin/clang" "/usr/bin/cc"; \
+ln --symbolic --relative "/usr/bin/clang++" "/usr/bin/c++"; \
+:;
+
 FROM catalyst_run as catalyst_run_2
 
 COPY --from=bootstrap_objective / /tmp/bootstrap_objective
@@ -227,3 +257,33 @@ tar \
 FROM scratch as output
 COPY --from=catalyst_run_2 /tmp/output /
 SHELL [ "/bin/bash", "-euxETo", "pipefail", "-c" ]
+
+RUN \
+for binary in /usr/lib/llvm/14/bin/*; do \
+  ln --symbolic --relative "${binary}" "/usr/bin/$(basename "${binary}")"; \
+done; \
+:;
+
+RUN \
+for library in /usr/lib/llvm/14/lib/*.so; do \
+  if [[ -e "/usr/lib/$(basename "${library}")" ]]; then \
+    rm "/usr/lib/$(basename "${library}")"; \
+  fi; \
+  ln --symbolic --relative "${library}" "/usr/lib/$(basename "${library}")"; \
+done; \
+:;
+
+RUN \
+for library in /usr/lib/llvm/14/lib/*.a; do \
+  if [[ -e "/usr/lib/$(basename "${library}")" ]]; then \
+    rm "/usr/lib/$(basename "${library}")"; \
+  fi; \
+  ln --symbolic --relative "${library}" "/usr/lib/$(basename "${library}")"; \
+done; \
+:;
+
+RUN \
+find /usr/bin -xtype l -exec rm {} \; ; \
+ln --symbolic --relative "/usr/bin/clang" "/usr/bin/cc"; \
+ln --symbolic --relative "/usr/bin/clang++" "/usr/bin/c++"; \
+:;
