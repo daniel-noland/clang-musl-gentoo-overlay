@@ -1,17 +1,12 @@
 # syntax=docker/dockerfile:1.4.1-labs
-ARG upstream_snapshot="20220417"
+ARG upstream_snapshot="20220420"
 ARG seed_image="gentoo/stage3:musl-${upstream_snapshot}"
 
 FROM $seed_image as seed_build
 ARG upstream_snapshot
 ARG seed_image
 
-SHELL [ \
-  "/bin/bash", \
-  "-euxETo", \
-  "pipefail", \
-  "-c" \
-]
+SHELL [ "/bin/bash", "-euxETo", "pipefail", "-c" ]
 
 RUN \
 --mount=type=tmpfs,target=/run \
@@ -74,9 +69,6 @@ emerge \
 
 RUN \
 emerge --depclean; \
-:;
-
-RUN \
 env-update; \
 :;
 
@@ -118,7 +110,8 @@ tar \
   --directory=/tmp/seed \
   --file /var/tmp/catalyst/builds/seed.tar \
   . \
-;
+; \
+:;
 
 COPY ./profiles/ /var/db/repos/gentoo/profiles/
 COPY sys-apps/attr/ /var/db/repos/gentoo/sys-apps/attr/
@@ -135,7 +128,6 @@ mksquashfs gentoo /var/tmp/catalyst/snapshots/gentoo-snapshot.sqfs; \
 :;
 
 COPY ./_assets/000_catalyst/etc/portage/ /etc/portage/
-
 COPY ./_assets/000_catalyst/etc/catalyst/catalyst.conf /etc/catalyst/
 COPY ./_assets/000_catalyst/etc/catalyst/catalystrc /etc/catalyst
 COPY ./_assets/000_catalyst/etc/catalyst/specs/bootstrap/stage1.spec /etc/catalyst/specs/bootstrap/stage1.spec
@@ -151,7 +143,7 @@ COPY ./_assets/000_catalyst/etc/catalyst/specs/bootstrap/stage2.spec /etc/cataly
 RUN \
 --security=insecure \
 --mount=type=tmpfs,target=/run \
-catalyst -p --file /etc/catalyst/specs/bootstrap/stage2.spec; \
+catalyst --file /etc/catalyst/specs/bootstrap/stage2.spec; \
 :;
 
 COPY ./_assets/000_catalyst/etc/catalyst/specs/bootstrap/stage3.spec /etc/catalyst/specs/bootstrap/stage3.spec
@@ -159,7 +151,7 @@ COPY ./_assets/000_catalyst/etc/catalyst/specs/bootstrap/stage3.spec /etc/cataly
 RUN \
 --security=insecure \
 --mount=type=tmpfs,target=/run \
-catalyst -p --file /etc/catalyst/specs/bootstrap/stage3.spec; \
+catalyst --file /etc/catalyst/specs/bootstrap/stage3.spec; \
 :;
 
 RUN \
@@ -185,36 +177,6 @@ RUN \
 find /usr/bin -xtype l -exec echo rm {} \; ; \
 :;
 
-RUN \
-for binary in /usr/lib/llvm/14/bin/*; do \
-  ln --symbolic --relative "${binary}" "/usr/bin/$(basename "${binary}")"; \
-done; \
-:;
-
-RUN \
-for library in /usr/lib/llvm/14/lib/*.so; do \
-  if [[ -e "/usr/lib/$(basename "${library}")" ]]; then \
-    rm "/usr/lib/$(basename "${library}")"; \
-  fi; \
-  ln --symbolic --relative "${library}" "/usr/lib/$(basename "${library}")"; \
-done; \
-:;
-
-RUN \
-for library in /usr/lib/llvm/14/lib/*.a; do \
-  if [[ -e "/usr/lib/$(basename "${library}")" ]]; then \
-    rm "/usr/lib/$(basename "${library}")"; \
-  fi; \
-  ln --symbolic --relative "${library}" "/usr/lib/$(basename "${library}")"; \
-done; \
-:;
-
-RUN \
-find /usr/bin -xtype l -exec rm {} \; ; \
-ln --symbolic --relative "/usr/bin/clang" "/usr/bin/cc"; \
-ln --symbolic --relative "/usr/bin/clang++" "/usr/bin/c++"; \
-:;
-
 FROM catalyst_run as catalyst_run_2
 
 COPY --from=bootstrap_objective / /tmp/bootstrap_objective
@@ -234,7 +196,7 @@ COPY ./_assets/001_catalyst/etc/catalyst/specs/bootstrapped/stage1.spec /etc/cat
 RUN \
 --security=insecure \
 --mount=type=tmpfs,target=/run \
-catalyst --purge --file /etc/catalyst/specs/bootstrapped/stage1.spec; \
+catalyst --file /etc/catalyst/specs/bootstrapped/stage1.spec; \
 :;
 
 COPY ./_assets/001_catalyst/etc/catalyst/specs/bootstrapped/stage2.spec /etc/catalyst/specs/bootstrapped/
@@ -242,7 +204,7 @@ COPY ./_assets/001_catalyst/etc/catalyst/specs/bootstrapped/stage2.spec /etc/cat
 RUN \
 --security=insecure \
 --mount=type=tmpfs,target=/run \
-catalyst -p --file /etc/catalyst/specs/bootstrapped/stage2.spec; \
+catalyst --file /etc/catalyst/specs/bootstrapped/stage2.spec; \
 :;
 
 COPY ./_assets/001_catalyst/etc/catalyst/specs/bootstrapped/stage3.spec /etc/catalyst/specs/bootstrapped/
@@ -250,7 +212,7 @@ COPY ./_assets/001_catalyst/etc/catalyst/specs/bootstrapped/stage3.spec /etc/cat
 RUN \
 --security=insecure \
 --mount=type=tmpfs,target=/run \
-catalyst -p --file /etc/catalyst/specs/bootstrapped/stage3.spec; \
+catalyst --file /etc/catalyst/specs/bootstrapped/stage3.spec; \
 :;
 
 RUN \
@@ -264,9 +226,4 @@ tar \
 
 FROM scratch as output
 COPY --from=catalyst_run_2 /tmp/output /
-SHELL [ \
-  "/bin/bash", \
-  "-euxETo", \
-  "pipefail", \
-  "-c" \
-]
+SHELL [ "/bin/bash", "-euxETo", "pipefail", "-c" ]

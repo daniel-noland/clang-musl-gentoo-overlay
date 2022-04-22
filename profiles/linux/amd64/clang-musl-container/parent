@@ -1,5 +1,4 @@
-../../../default/linux/amd64/17.1
-../../../features/musl
+../../../default/linux/amd64/17.0/musl
 ../../../features/minimal
 ../../../features/container
 ../../../features/unified-usr
@@ -8,3 +7,4 @@
 ../../../features/llvm
 ../../../features/llvm/amd64
 ../../../features/llvm/v14
+../../../features/cascadelake
