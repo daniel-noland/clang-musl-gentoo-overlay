@@ -3,3 +3,4 @@
 
 amd64   linux/amd64/clang-musl-container/bootstrap    exp
 amd64   linux/amd64/clang-musl-container/bootstrapped  exp
+amd64   linux/amd64/clang-musl-container/bootstrapped/lto  exp

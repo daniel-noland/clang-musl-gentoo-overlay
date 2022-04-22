@@ -1,0 +1,14 @@
+# will be pulled by stage1
+sys-libs/compiler-rt
+sys-libs/libcxxabi
+sys-libs/libcxx
+sys-devel/llvm
+sys-devel/lld
+sys-devel/clang
+sys-libs/llvm-libunwind
+
+# GCC is not required for stage 1 after initial bootstrapping
+-sys-devel/gcc
+-sys-devel/gcc-config
+-sys-devel/binutils
+-sys-devel/binutils-config

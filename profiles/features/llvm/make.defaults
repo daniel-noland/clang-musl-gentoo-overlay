@@ -24,6 +24,3 @@ BOOTSTRAP_USE="${BOOTSTRAP_USE} libcxxabi"
 # sys-devel/gcc
 # only libgcc and stdlib are needed
 BOOTSTRAP_USE="${BOOTSTRAP_USE} -fortran"
-
-# llvm & clang: explicitly disable all extra targets, otherwise linking stage2 fails
-BOOTSTRAP_USE="${BOOTSTRAP_USE} -llvm_targets_BPF -llvm_targets_AMDGPU -llvm_targets_NVPTX -llvm_targets_BPF"

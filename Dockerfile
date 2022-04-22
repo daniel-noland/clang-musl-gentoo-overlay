@@ -252,3 +252,21 @@ RUN \
 --mount=type=tmpfs,target=/run \
 catalyst -p --file /etc/catalyst/specs/bootstrapped/stage3.spec; \
 :;
+
+RUN \
+mkdir --parent /tmp/output; \
+tar \
+  --extract \
+  --file /var/tmp/catalyst/builds/clang-musl-container-bootstrapped/stage3-amd64-clang-musl-container-bootstrapped.tar.gz \
+  --directory=/tmp/output \
+; \
+:;
+
+FROM scratch as output
+COPY --from=catalyst_run_2 /tmp/output /
+SHELL [ \
+  "/bin/bash", \
+  "-euxETo", \
+  "pipefail", \
+  "-c" \
+]

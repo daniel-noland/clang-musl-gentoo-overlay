@@ -1,2 +1,0 @@
-# portage breaks without adding
-dev-lang/python -bluetooth -examples gdbm libedit ncurses readline sqlite ssl tk  xml

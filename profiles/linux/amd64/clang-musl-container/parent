@@ -1,7 +1,10 @@
-../../../default/linux/amd64/17.0/musl
+../../../default/linux/amd64/17.1
+../../../features/musl
 ../../../features/minimal
 ../../../features/container
 ../../../features/unified-usr
+../../../features/static-libs
 ../../../features/python3.10
+../../../features/llvm
 ../../../features/llvm/amd64
-../../../features/llvm/v14.0.1
+../../../features/llvm/v14
