@@ -24,4 +24,4 @@ export STRIP="llvm-strip"
 export CFLAGS="-fPIC -fstack-protector-strong -D_FORTIFY_SOURCE=2 -O3 -march=native -pipe -flto=thin"
 export CXXFLAGS="${CFLAGS}"
 
-LDFLAGS="-Wl,-O2 -Wl,--as-needed -Wl,-z,relro,-z,now -pie -fuse-ld=lld -unwindlib=libunwind"
+export LDFLAGS="-Wl,-O2 -Wl,--as-needed -Wl,-z,relro,-z,now -pie -fuse-ld=lld -unwindlib=libunwind"

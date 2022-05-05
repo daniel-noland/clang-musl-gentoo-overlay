@@ -1,5 +1,5 @@
 # syntax=docker/dockerfile:1.4.1-labs
-ARG upstream_snapshot="20220420"
+ARG upstream_snapshot="20220504"
 ARG seed_image="gentoo/stage3:musl-${upstream_snapshot}"
 
 FROM $seed_image as seed_build
@@ -184,16 +184,7 @@ done; \
 :;
 
 RUN \
-for library in /usr/lib/llvm/14/lib/*.so; do \
-  if [[ -e "/usr/lib/$(basename "${library}")" ]]; then \
-    rm "/usr/lib/$(basename "${library}")"; \
-  fi; \
-  ln --symbolic --relative "${library}" "/usr/lib/$(basename "${library}")"; \
-done; \
-:;
-
-RUN \
-for library in /usr/lib/llvm/14/lib/*.a; do \
+for library in /usr/lib/llvm/14/lib/*.{so,a} /usr/lib/llvm/14/lib/*.{so,a}.*; do \
   if [[ -e "/usr/lib/$(basename "${library}")" ]]; then \
     rm "/usr/lib/$(basename "${library}")"; \
   fi; \
@@ -205,6 +196,8 @@ RUN \
 find /usr/bin -xtype l -exec rm {} \; ; \
 ln --symbolic --relative "/usr/bin/clang" "/usr/bin/cc"; \
 ln --symbolic --relative "/usr/bin/clang++" "/usr/bin/c++"; \
+ln --symbolic --relative "/usr/bin/cc" "/usr/bin/x86_64-gentoo-linux-musl-gcc"; \
+ln --symbolic --relative "/usr/bin/c++" "/usr/bin/x86_64-gentoo-linux-musl-g++"; \
 :;
 
 FROM catalyst_run as catalyst_run_2
@@ -265,16 +258,7 @@ done; \
 :;
 
 RUN \
-for library in /usr/lib/llvm/14/lib/*.so; do \
-  if [[ -e "/usr/lib/$(basename "${library}")" ]]; then \
-    rm "/usr/lib/$(basename "${library}")"; \
-  fi; \
-  ln --symbolic --relative "${library}" "/usr/lib/$(basename "${library}")"; \
-done; \
-:;
-
-RUN \
-for library in /usr/lib/llvm/14/lib/*.a; do \
+for library in /usr/lib/llvm/14/lib/*.{so,a} /usr/lib/llvm/14/lib/*.{so,a}.*; do \
   if [[ -e "/usr/lib/$(basename "${library}")" ]]; then \
     rm "/usr/lib/$(basename "${library}")"; \
   fi; \

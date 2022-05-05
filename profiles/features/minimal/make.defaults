@@ -38,7 +38,6 @@ _MINIMIZE="${_MINIMIZE} -upnp"
 _MINIMIZE="${_MINIMIZE} -wayland"
 _MINIMIZE="${_MINIMIZE} -wxwidgets"
 
-_MINIMIZE="${_MINIMIZE} minimal"
 _MINIMIZE="${_MINIMIZE} headless"
 _MINIMIZE="${_MINIMIZE} headless-awt"
 
