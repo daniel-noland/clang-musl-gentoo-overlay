@@ -300,6 +300,64 @@ COPY ./_assets/002_kernel/kernel.config /tmp/linux-build/linux-${KERNEL_VERSION}
 
 WORKDIR /tmp/linux-build/linux-${KERNEL_VERSION}
 
+COPY --from=catalyst_run /var/db/repos/gentoo/ /var/db/repos/gentoo/
+
+RUN \
+--mount=type=tmpfs,target=/run \
+emerge \
+  --complete-graph \
+  --deep \
+  --jobs="$(nproc)" \
+  --load-average="$(($(nproc) * 2))" \
+  --newuse \
+  --update \
+  --verbose \
+  --with-bdeps=y \
+  @world \
+; \
+:;
+
+RUN \
+emerge --depclean; \
+env-update; \
+:;
+
+RUN \
+--mount=type=tmpfs,target=/run \
+emerge \
+  --complete-graph \
+  --deep \
+  --jobs="$(nproc)" \
+  --load-average="$(($(nproc) * 2))" \
+  --newuse \
+  --update \
+  --verbose \
+  --with-bdeps=y \
+  sys-kernel/gentoo-sources \
+; \
+:;
+
+RUN \
+--mount=type=tmpfs,target=/run \
+emerge \
+  --complete-graph \
+  --deep \
+  --jobs="$(nproc)" \
+  --load-average="$(($(nproc) * 2))" \
+  --newuse \
+  --update \
+  --verbose \
+  --with-bdeps=y \
+  @world \
+; \
+:;
+
+RUN \
+emerge --depclean; \
+env-update; \
+:;
+
+
 RUN \
 make \
   LLVM=1 \
