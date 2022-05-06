@@ -246,7 +246,7 @@ RUN \
 mkdir --parent /tmp/output; \
 tar \
   --extract \
-  --file /var/tmp/catalyst/builds/clang-musl-container-bootstrapped/stage3-amd64-clang-musl-container-bootstrapped.tar.gz \
+  --file /var/tmp/catalyst/builds/clang-musl-container-optimized/stage3-amd64-clang-musl-container-optimized.tar.gz \
   --directory=/tmp/output \
 ; \
 :;
