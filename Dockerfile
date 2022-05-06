@@ -138,6 +138,7 @@ RUN \
 catalyst --file /etc/catalyst/specs/bootstrap/stage1.spec; \
 :;
 
+COPY ./_assets/001_catalyst/etc/catalyst/catalystrc /etc/catalyst
 COPY ./_assets/000_catalyst/etc/catalyst/specs/bootstrap/stage2.spec /etc/catalyst/specs/bootstrap/stage2.spec
 
 RUN \
@@ -192,6 +193,9 @@ for library in /usr/lib/llvm/14/lib/*.{so,a} /usr/lib/llvm/14/lib/*.{so,a}.*; do
 done; \
 :;
 
+# NOTE: linking /usr/bin/x86_64-gentoo-linux-musl-g{cc,++} to clang{,++} is a hack to make the perl-Encode
+# build happy in the second stage.  This hack only gets included in the first build phase so it shouldn't
+# damage anything if the build completes.
 RUN \
 find /usr/bin -xtype l -exec rm {} \; ; \
 ln --symbolic --relative "/usr/bin/clang" "/usr/bin/cc"; \
@@ -266,8 +270,42 @@ for library in /usr/lib/llvm/14/lib/*.{so,a} /usr/lib/llvm/14/lib/*.{so,a}.*; do
 done; \
 :;
 
+# NOTE: linking /usr/bin/x86_64-gentoo-linux-musl-g{cc,++} to clang{,++} is a hack to make the perl-Encode
+# build happy in the second stage.  This hack only gets included in the first build phase so it shouldn't
+# damage anything if the build completes.
 RUN \
 find /usr/bin -xtype l -exec rm {} \; ; \
 ln --symbolic --relative "/usr/bin/clang" "/usr/bin/cc"; \
 ln --symbolic --relative "/usr/bin/clang++" "/usr/bin/c++"; \
+ln --symbolic --relative "/usr/bin/cc" "/usr/bin/x86_64-gentoo-linux-musl-gcc"; \
+ln --symbolic --relative "/usr/bin/c++" "/usr/bin/x86_64-gentoo-linux-musl-g++"; \
+:;
+
+# Download and build the kernel with a custom configuration.
+# The resulting debs will bin included in the generated debian repo.
+ENV KERNEL_VERSION="5.15.37"
+RUN \
+mkdir /tmp/linux-build/; \
+wget \
+  --quiet \
+  --output-document=- \
+  "https://cdn.kernel.org/pub/linux/kernel/v5.x/linux-${KERNEL_VERSION}.tar.gz" \
+  | \
+  tar --extract --gzip --directory=/tmp/linux-build/ \
+; \
+cd /tmp/linux-build/linux-${KERNEL_VERSION}; \
+:;
+
+COPY ./_assets/002_kernel/kernel.config /tmp/linux-build/linux-${KERNEL_VERSION}/.config
+
+WORKDIR /tmp/linux-build/linux-${KERNEL_VERSION}
+
+RUN \
+make \
+  LLVM=1 \
+  CC=clang \
+  KCFLAGS="-O3 -march=native -flto=thin" \
+  ARCH=x86_64 \
+  --jobs="$(( "$(nproc)" + 1 ))" \
+; \
 :;
