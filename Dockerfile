@@ -1,5 +1,5 @@
 # syntax=docker/dockerfile:1.4.1-labs
-ARG upstream_snapshot="20220504"
+ARG upstream_snapshot="20220511"
 ARG seed_image="gentoo/stage3:musl-${upstream_snapshot}"
 
 FROM $seed_image as seed_build
@@ -116,9 +116,10 @@ tar \
 COPY ./profiles/ /var/db/repos/gentoo/profiles/
 COPY sys-apps/attr/ /var/db/repos/gentoo/sys-apps/attr/
 COPY sys-libs/musl/ /var/db/repos/gentoo/sys-libs/musl/
+
 RUN \
-ebuild /var/db/repos/gentoo/sys-apps/attr/attr-2.5.1.ebuild manifest; \
-ebuild /var/db/repos/gentoo/sys-libs/musl/musl-1.2.2-r7.ebuild manifest; \
+for ebuild in /var/db/repos/gentoo/sys-apps/attr/*.ebuild; do ebuild "${ebuild}" manifest; done; \
+for ebuild in /var/db/repos/gentoo/sys-libs/musl/*.ebuild; do ebuild "${ebuild}" manifest; done; \
 :;
 
 RUN \
@@ -174,6 +175,7 @@ RUN \
 env-update; \
 :;
 
+# Clean up busted symlinks (baselayout dosen't do a good job of accounting for env without gcc + glibc)
 RUN \
 find /usr/bin -xtype l -exec echo rm {} \; ; \
 :;
@@ -193,15 +195,10 @@ for library in /usr/lib/llvm/14/lib/*.{so,a} /usr/lib/llvm/14/lib/*.{so,a}.*; do
 done; \
 :;
 
-# NOTE: linking /usr/bin/x86_64-gentoo-linux-musl-g{cc,++} to clang{,++} is a hack to make the perl-Encode
-# build happy in the second stage.  This hack only gets included in the first build phase so it shouldn't
-# damage anything if the build completes.
+# Declare clang{,++} to be the default C{,++} compiler
 RUN \
-find /usr/bin -xtype l -exec rm {} \; ; \
 ln --symbolic --relative "/usr/bin/clang" "/usr/bin/cc"; \
 ln --symbolic --relative "/usr/bin/clang++" "/usr/bin/c++"; \
-ln --symbolic --relative "/usr/bin/cc" "/usr/bin/x86_64-gentoo-linux-musl-gcc"; \
-ln --symbolic --relative "/usr/bin/c++" "/usr/bin/x86_64-gentoo-linux-musl-g++"; \
 :;
 
 FROM catalyst_run as catalyst_run_2
@@ -277,8 +274,6 @@ RUN \
 find /usr/bin -xtype l -exec rm {} \; ; \
 ln --symbolic --relative "/usr/bin/clang" "/usr/bin/cc"; \
 ln --symbolic --relative "/usr/bin/clang++" "/usr/bin/c++"; \
-ln --symbolic --relative "/usr/bin/cc" "/usr/bin/x86_64-gentoo-linux-musl-gcc"; \
-ln --symbolic --relative "/usr/bin/c++" "/usr/bin/x86_64-gentoo-linux-musl-g++"; \
 :;
 
 # Download and build the kernel with a custom configuration.
@@ -357,13 +352,48 @@ emerge --depclean; \
 env-update; \
 :;
 
+RUN emerge vim
+
+COPY ./_assets/002_kernel/etc/portage/make.conf /etc/portage/
+
+VOLUME ["/var/cache/pkg"]
 
 RUN \
-make \
-  LLVM=1 \
-  CC=clang \
-  KCFLAGS="-O3 -march=native -flto=thin" \
-  ARCH=x86_64 \
-  --jobs="$(( "$(nproc)" + 1 ))" \
+--mount=type=tmpfs,target=/run \
+emerge \
+  --complete-graph \
+  --deep \
+  --jobs="$(nproc)" \
+  --load-average="$(($(nproc) * 2))" \
+  --newuse \
+  --update \
+  --verbose \
+  --with-bdeps=y \
+  --buildpkg \
+  --emptytree \
+  @world \
 ; \
 :;
+#
+#RUN \
+#make \
+#  LLVM=1 \
+#  CC=clang \
+#  KCFLAGS="-O3 -march=native -flto=thin" \
+#  ARCH=x86_64 \
+#  --jobs="$(( "$(nproc)" + 1 ))" \
+#; \
+#:;
+
+#
+#
+#RUN \
+#make \
+#  LLVM=1 \
+#  CC=clang \
+#  KCFLAGS="-O3 -march=native -flto=thin" \
+#  ARCH=x86_64 \
+#  install \
+#; \
+#:;
+#

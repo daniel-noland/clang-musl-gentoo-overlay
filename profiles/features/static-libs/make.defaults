@@ -1,4 +1,4 @@
-_STATIC="static-libs static-pic"
+_STATIC="static-libs"
 USE="${USE} ${_STATIC}"
 BOOTSTRAP_USE="${BOOTSTRAP_USE} ${_STATIC}"
 CATALYST_USE="${BOOTSTRAP_USE} ${_STATIC}"

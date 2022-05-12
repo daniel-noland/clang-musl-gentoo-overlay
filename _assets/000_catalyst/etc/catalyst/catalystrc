@@ -1,4 +1,18 @@
 #!/bin/bash
+# Building packages in docker means the build is already sandboxed anyway and the second order sandbox attempt usually
+# fails extraneously.
+FEATURES="${FEATURES} -ipc-sandbox"
+FEATURES="${FEATURES} -network-sandbox"
+FEATURES="${FEATURES} -pid-sandbox"
+FEATURES="${FEATURES} -sandbox"
+FEATURES="${FEATURES} -usersandbox"
+
+# We don't need to spend time building and running tests.
+# Tests often extraneously fail in unprivileged container builds anyway.
+FEATURES="${FEATURES} -test"
+
+export FEATURES
+
 export myGCC="sys-devel/clang"
 export myBINUTILS="sys-devel/llvm"
 export myEXTRA="dev-lang/perl sys-devel/lld sys-libs/compiler-rt sys-devel/clang-runtime sys-libs/libcxx sys-libs/libcxxabi sys-libs/llvm-libunwind sys-devel/llvm-common sys-devel/clang-common"

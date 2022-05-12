@@ -1,5 +1,3 @@
-EMERGE_DEFAULT_OPTS="--jobs 64 --load-average 80.0"
-
 # Disable sandbox for docker build (it is already sandboxed anyway and the second sandbox attempt fails)
 FEATURES="${FEATURES} -ipc-sandbox"
 FEATURES="${FEATURES} -network-sandbox"
