@@ -1,0 +1,9 @@
+subarch: ${ARCH}
+target: stage1
+version_stamp: ${VERSION_STAMP}
+rel_type: ${RELEASE_TYPE}
+profile: ${STAGE1_PROFILE}
+snapshot_treeish: ${PORTAGE_SNAPSHOT}
+source_subpath: ${SEED}
+compression_mode: gzip
+update_seed: no
