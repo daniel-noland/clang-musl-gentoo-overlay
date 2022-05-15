@@ -36,7 +36,7 @@ export STRIP="llvm-strip"
 export CFLAGS="-fPIC -fstack-protector-strong -D_FORTIFY_SOURCE=2 -O3 -march=native -pipe -flto=thin"
 export CXXFLAGS="${CFLAGS}"
 
-LDFLAGS="${LDFLAGS} -Wl,-O1"
+LDFLAGS="${LDFLAGS} -Wl,-O2"
 LDFLAGS="${LDFLAGS} -Wl,--as-needed"
 LDFLAGS="${LDFLAGS} -Wl,-z,relro,-z,now"
 LDFLAGS="${LDFLAGS} -pie"

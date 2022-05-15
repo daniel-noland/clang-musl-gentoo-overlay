@@ -1,4 +1,4 @@
-_HARDWARE_FLAGS_FLAGS="-march=cascadelake"
+_HARDWARE_FLAGS="-march=cascadelake"
 
 CFLAGS="${CFLAGS} ${_HARDWARE_FLAGS}"
 CXXFLAGS="${CXXFLAGS} ${_HARDWARE_FLAGS}"

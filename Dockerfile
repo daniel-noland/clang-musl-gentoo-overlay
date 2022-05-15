@@ -177,7 +177,7 @@ env-update; \
 
 # Clean up busted symlinks (baselayout dosen't do a good job of accounting for env without gcc + glibc)
 RUN \
-find /usr/bin -xtype l -exec echo rm {} \; ; \
+find /usr/bin -xtype l -exec rm {} \; ; \
 :;
 
 RUN \
@@ -267,9 +267,6 @@ for library in /usr/lib/llvm/14/lib/*.{so,a} /usr/lib/llvm/14/lib/*.{so,a}.*; do
 done; \
 :;
 
-# NOTE: linking /usr/bin/x86_64-gentoo-linux-musl-g{cc,++} to clang{,++} is a hack to make the perl-Encode
-# build happy in the second stage.  This hack only gets included in the first build phase so it shouldn't
-# damage anything if the build completes.
 RUN \
 find /usr/bin -xtype l -exec rm {} \; ; \
 ln --symbolic --relative "/usr/bin/clang" "/usr/bin/cc"; \
@@ -374,26 +371,14 @@ emerge \
   @world \
 ; \
 :;
-#
-#RUN \
-#make \
-#  LLVM=1 \
-#  CC=clang \
-#  KCFLAGS="-O3 -march=native -flto=thin" \
-#  ARCH=x86_64 \
-#  --jobs="$(( "$(nproc)" + 1 ))" \
-#; \
-#:;
 
-#
-#
-#RUN \
-#make \
-#  LLVM=1 \
-#  CC=clang \
-#  KCFLAGS="-O3 -march=native -flto=thin" \
-#  ARCH=x86_64 \
-#  install \
-#; \
-#:;
-#
+RUN \
+make \
+  LLVM=1 \
+  CC=clang \
+  KCFLAGS="-O3 -march=native -flto=thin" \
+  ARCH=x86_64 \
+  --jobs="$(( "$(nproc)" + 1 ))" \
+; \
+:;
+

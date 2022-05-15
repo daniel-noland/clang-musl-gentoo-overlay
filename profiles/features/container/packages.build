@@ -6,7 +6,6 @@
 -sys-apps/less
 -sys-apps/man-pages
 -sys-apps/net-tools
--sys-apps/shadow
 -sys-apps/util-linux
 -sys-fs/e2fsprogs
 -sys-process/procps
