@@ -132,7 +132,7 @@ RUN \
 catalyst --file /etc/catalyst/specs/bootstrap/stage1.spec; \
 :;
 
-#COPY _assets/001_catalyst/etc/catalyst/catalystrc /etc/catalyst
+COPY _assets/001_catalyst/etc/catalyst/catalystrc /etc/catalyst
 COPY _assets/000_catalyst/etc/catalyst/specs/bootstrap/stage2.spec /etc/catalyst/specs/bootstrap/stage2.spec
 
 RUN \
