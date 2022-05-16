@@ -1,5 +1,5 @@
 # syntax=docker/dockerfile:1.4.1-labs
-ARG upstream_snapshot="20220511"
+ARG upstream_snapshot="20220514"
 ARG seed_image="gentoo/stage3:musl-${upstream_snapshot}"
 
 FROM $seed_image as seed_build
@@ -9,12 +9,12 @@ ARG seed_image
 SHELL [ "/bin/bash", "-euxETo", "pipefail", "-c" ]
 
 RUN \
---mount=type=tmpfs,target=/run \
 emerge-webrsync --revert="${upstream_snapshot}"; \
 :;
 
 COPY _assets/000_catalyst/etc/portage /etc/portage/
 
+# Sync up on whatever differences exist between the tarball and the snapshot.
 RUN \
 --mount=type=tmpfs,target=/run \
 emerge \
@@ -28,10 +28,8 @@ emerge \
   --with-bdeps=y \
   @world \
 ; \
-:;
-
-RUN \
 emerge --depclean; \
+env-update; \
 :;
 
 RUN \
@@ -48,6 +46,8 @@ emerge \
   app-eselect/eselect-repository \
   dev-vcs/git \
 ; \
+emerge --depclean; \
+env-update; \
 :;
 
 # Remove the official gentoo repo (we want the snapshot instead)
