@@ -1,0 +1,53 @@
+#!/bin/bash
+# TOOLCHAIN_CHANGING is a template var which will be transformed as needed during Dockerfile build
+# It will be either false (i.e. we are already on LLVM + musl, or GCC_TO_LLVM in case we need to change
+# toolchains)
+declare -r TOOLCHAIN_CHANGING="%_%_%TOOLCHAIN_CHANGING%_%_%"
+
+export myGCC="sys-devel/clang"
+export myBINUTILS="sys-devel/llvm"
+# TODO: not sure why I need perl here.  It is very likely it will be installed anyway.
+export myEXTRA="
+  dev-lang/perl
+  sys-devel/clang-common
+  sys-devel/clang-runtime
+  sys-devel/lld
+  sys-devel/llvm-common
+  sys-libs/compiler-rt
+  sys-libs/libcxx
+  sys-libs/libcxxabi
+  sys-libs/llvm-libunwind
+"
+
+case "${TOOLCHAIN_CHANGING}" in
+false)
+  # we are already on LLVM + musl so use those tools
+  export ADDR2LINE="llvm-addr2line"
+  export AR="llvm-ar"
+  export AS="llvm-as"
+  export CC="clang"
+  export CXX="clang++"
+  export LD="ld.lld"
+  export NM="llvm-nm"
+  export OBJCOPY="llvm-objcopy"
+  export OBJDUMP="llvm-objdump"
+  export RANLIB="llvm-ranlib"
+  export READELF="llvm-readelf"
+  export STRINGS="llvm-strings"
+  export STRIP="llvm-strip"
+  ;;
+GCC_TO_LLVM)
+  # We are still on gcc + musl at this point.
+  # We need to build with minimal flags to make the changeover to LLVM work.
+  # Clearing the flags isn't enough at this point since the profile will inject fancy flags if we don't set them
+  # explicitly here.
+  export CFLAGS="-O1 -pipe"
+  export CXXFLAGS="${CFLAGS}"
+  # Fancy LDFLAGS in particular is likely to break stuff during changeover so set it to blank.
+  export LDFLAGS=""
+  ;;
+*)
+  printf >&2 -- "TOOLCHAIN_CHANGING template not populated properly TOOLCHAIN_CHANGING=\"%s\"\n" "${TOOLCHAIN_CHANGING}"
+  exit 1
+  ;;
+esac
