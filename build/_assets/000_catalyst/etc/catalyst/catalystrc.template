@@ -2,7 +2,7 @@
 # TOOLCHAIN_CHANGING is a template var which will be transformed as needed during Dockerfile build
 # It will be either false (i.e. we are already on LLVM + musl, or GCC_TO_LLVM in case we need to change
 # toolchains)
-declare -r TOOLCHAIN_CHANGING="%_%_%TOOLCHAIN_CHANGING%_%_%"
+declare -r TOOLCHAIN_CHANGING="${TOOLCHAIN_CHANGING}"
 
 export myGCC="sys-devel/clang"
 export myBINUTILS="sys-devel/llvm"

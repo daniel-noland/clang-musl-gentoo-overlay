@@ -1,9 +1,8 @@
 subarch: ${ARCH}
-target: stage1
+target: stage3
 version_stamp: ${VERSION_STAMP}
 rel_type: ${RELEASE_TYPE}
-profile: ${STAGE1_PROFILE}
+profile: ${STAGE3_PROFILE}
 snapshot_treeish: ${PORTAGE_SNAPSHOT}
-source_subpath: ${SEED}
+source_subpath: ${SOURCE_SUBPATH}
 compression_mode: gzip
-update_seed: no

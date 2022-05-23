@@ -1,8 +1,9 @@
 subarch: ${ARCH}
-target: stage2
+target: stage1
 version_stamp: ${VERSION_STAMP}
 rel_type: ${RELEASE_TYPE}
-profile: ${STAGE2_PROFILE}
+profile: ${STAGE1_PROFILE}
 snapshot_treeish: ${PORTAGE_SNAPSHOT}
-source_subpath: ${VERSION_STAMP}/stage1-${ARCH}-${RELEASE_TYPE}.tar.gz
+source_subpath: ${SOURCE_SUBPATH}
 compression_mode: gzip
+update_seed: no
