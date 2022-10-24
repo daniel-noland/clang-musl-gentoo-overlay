@@ -1,6 +1,6 @@
 # syntax=docker/dockerfile:1.4.1-labs
-ARG TOOLCHAIN_CHANGING=false
-ARG upstream_snapshot="20220521"
+ARG TOOLCHAIN_CHANGING="GCC_TO_LLVM"
+ARG upstream_snapshot="20221017"
 ARG upstream_image="gentoo/stage3:musl-${upstream_snapshot}"
 ARG stage3_bootstrap="upstream"
 
@@ -64,6 +64,7 @@ COPY ./_assets/usr/share/portage/config/repos.conf /usr/share/portage/config/rep
 # Remove any trace of the original gentoo repo from our cache (it is just wasting space at this point)
 RUN rm --force --recursive /var/db/repos/gentoo
 
+ENV _NOTHING_=14
 # Sync with the snapshot repo
 RUN \
 emaint sync --allrepos; \
@@ -97,10 +98,8 @@ FROM $stage3_bootstrap as catalyst_run
 
 RUN \
 --mount=type=tmpfs,target=/run \
-emerge \
+USE=zstd emerge \
   --autounmask-write \
-  --complete-graph \
-  --deep \
   --jobs="$(nproc)" \
   --load-average="$(($(nproc) * 2))" \
   --newuse \
@@ -108,6 +107,7 @@ emerge \
   --verbose \
   --with-bdeps=y \
   dev-util/catalyst \
+  sys-fs/squashfs-tools \
   sys-fs/squashfs-tools-ng \
 ; \
 :;
@@ -126,11 +126,12 @@ tar \
 
 RUN \
 mkdir --parent /var/tmp/catalyst/snapshots; \
-cd /var/db/repos/; \
-gensquashfs --pack-dir=gentoo /var/tmp/catalyst/snapshots/gentoo-snapshot.sqfs; \
+rm --force /var/tmp/catalyst/snapshots/gentoo-snapshot.sqfs;  \
+cd /var/db/repos/gentoo; \
+mksquashfs ./ /var/tmp/catalyst/snapshots/gentoo-snapshot.sqfs -comp zstd; \
 :;
 
-ARG TOOLCHAIN_CHANGING
+ARG TOOLCHAIN_CHANGING="GCC_TO_LLVM"
 ENV TOOLCHAIN_CHANGING="${TOOLCHAIN_CHANGING}"
 COPY _assets/000_catalyst/etc/catalyst/catalyst.conf /etc/catalyst/
 COPY _assets/000_catalyst/etc/catalyst/catalystrc.template /etc/catalyst/
@@ -151,7 +152,7 @@ ENV PORTAGE_SNAPSHOT="${PORTAGE_SNAPSHOT}"
 
 ENV SOURCE_SUBPATH="seed.tar"
 
-ARG STAGE1_PROFILE="custom/linux/amd64/clang-musl-container/optimize/lto"
+ARG STAGE1_PROFILE="custom/linux/amd64/clang-musl-container/bootstrap"
 ENV STAGE1_PROFILE="${STAGE1_PROFILE}"
 
 COPY _assets/000_catalyst/etc/catalyst/specs/stage1.template.spec /etc/catalyst/specs/stage1.template.spec
@@ -191,19 +192,6 @@ RUN \
 catalyst --file /etc/catalyst/specs/stage2.spec; \
 :;
 
-ENV SOURCE_SUBPATH="${VERSION_STAMP}/stage2-${ARCH}-${RELEASE_TYPE}.tar.gz"
-ENV VERSION_STAMP="clang-musl-container-bootstrapped"
-ENV RELEASE_TYPE="${VERSION_STAMP}"
-RUN \
-cd /etc/catalyst/specs/; \
-envsubst < stage2.template.spec > stage2.rebuild.spec; \
-:;
-
-RUN \
---security=insecure \
---mount=type=tmpfs,target=/run \
-catalyst --file /etc/catalyst/specs/stage2.rebuild.spec; \
-:;
 
 COPY _assets/000_catalyst/etc/catalyst/specs/stage3.template.spec /etc/catalyst/specs/
 ENV SOURCE_SUBPATH="${VERSION_STAMP}/stage2-${ARCH}-${RELEASE_TYPE}.tar.gz"
@@ -224,10 +212,12 @@ RUN \
 mkdir --parent /objective; \
 tar \
   --extract \
-  --file /var/tmp/catalyst/builds/clang-musl-container-bootstrapped/stage3-amd64-clang-musl-container-bootstrapped.tar.gz \
+  --file /var/tmp/catalyst/builds/clang-musl-container-bootstrap/stage3-amd64-clang-musl-container-bootstrap.tar.gz \
   --directory=/objective \
 ; \
 :;
+
+COPY ./_assets/usr/share/portage/config/repos.conf /objective/usr/shar/portage/config/repos.conf
 
 FROM scratch as objective
 
@@ -241,7 +231,10 @@ env-update; \
 
 # Clean up busted symlinks (baselayout dosen't seem to do a good job of accounting for env without gcc + glibc)
 RUN \
-find /usr/bin -xtype l -exec rm {} \; ; \
+export IFS=":"; \
+for element in ${PATH}; do \
+  find "${element}" -xtype l -exec rm {} \; ; \
+done; \
 :;
 
 # TODO: find out if we still really need this
@@ -267,9 +260,10 @@ ln --symbolic --relative "/usr/bin/clang" "/usr/bin/cc"; \
 ln --symbolic --relative "/usr/bin/clang++" "/usr/bin/c++"; \
 :;
 
+COPY ./_assets/002_kernel/etc/portage/make.conf /etc/portage/make.conf
 COPY ./_assets/usr/share/portage/config/repos.conf /usr/share/portage/config/repos.conf
+RUN emaint sync --allrepos
 
-COPY --from=upstream /var/db/repos/gentoo /var/db/repos/gentoo
 # Sanity rebuild.  If this fails then something way downstream of it is basically sure to fail.
 # It takes time here but it saves time overall in the end.
 RUN \
@@ -289,39 +283,20 @@ emerge --depclean; \
 env-update; \
 :;
 
-## TODO: add dev-vcs/git to @system in repo upstream
-#RUN \
-#--mount=type=tmpfs,target=/run \
-#emerge \
-#  --complete-graph \
-#  --deep \
-#  --jobs="$(nproc)" \
-#  --load-average="$(($(nproc) * 2))" \
-#  --newuse \
-#  --update \
-#  --verbose \
-#  --with-bdeps=y \
-#  dev-vcs/git \
-#; \
-#emerge --depclean; \
-#env-update; \
-#:;
-#
-#
-## Package up everything!
-#RUN \
-#--mount=type=tmpfs,target=/run \
-#emerge \
-#  --build-pkg \
-#  --complete-graph \
-#  --deep \
-#  --empty-tree \
-#  --jobs="$(nproc)" \
-#  --load-average="$(($(nproc) * 2))" \
-#  --newuse \
-#  --update \
-#  --verbose \
-#  --with-bdeps=y \
-#  @world \
-#; \
-#:;
+# Package up everything!
+RUN \
+--mount=type=tmpfs,target=/run \
+emerge \
+  --buildpkgonly \
+  --complete-graph \
+  --deep \
+  --emptytree \
+  --jobs="$(nproc)" \
+  --load-average="$(($(nproc) * 2))" \
+  --newuse \
+  --update \
+  --verbose \
+  --with-bdeps=y \
+  @world \
+; \
+:;

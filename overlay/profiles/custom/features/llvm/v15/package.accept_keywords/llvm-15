@@ -1,0 +1,15 @@
+<dev-util/lldb-15.0.0 ~amd64
+<sys-devel/clang-15.0.0 ~amd64
+<sys-devel/clang-common-15.0.0 ~amd64
+<sys-devel/clang-runtime-15.0.0 ~amd64
+<sys-devel/clang-toolchain-symlinks-15.0.0 ~amd64
+<sys-devel/lld-15.0.0 ~amd64
+<sys-devel/lld-toolchain-symlinks-15.0.0 ~amd64
+<sys-devel/llvm-15.0.0 ~amd64
+<sys-devel/llvm-common-15.0.0 ~amd64
+<sys-devel/llvm-toolchain-symlinks-15.0.0 ~amd64
+<sys-libs/compiler-rt-15.0.0 ~amd64
+<sys-libs/libcxx-15.0.0 ~amd64
+<sys-libs/libcxxabi-15.0.0 ~amd64
+<sys-libs/libomp-15.0.0 ~amd64
+<sys-libs/llvm-libunwind-15.0.0 ~amd64
